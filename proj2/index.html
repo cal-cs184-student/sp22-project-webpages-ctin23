@@ -6,7 +6,7 @@
 	<body>
 		<h2>Overview</h2>
 		<p>
-			In this project, we implemented a triangle rasterizer, simple matrix transform functions, and various antialising methods, namely supersampling, pixel sampling, and level sampling. We gained insight on the speed, memory, and antialiasing tradeoffs for each method. We also gained experience working with barycentric coordinates, mipmaps, and the CGL library. 
+			There are two sections in this project. In the first section, we implemented Bezier curves and Bezier surfaces using de Casteljau algorithm. Bezier curves and Bezier surfaces are used for producing smooth curves and surfaces by recursively cutting the corner. In the second section, we implemented functions for area-weighted vertex normals, edge flips, edge splits, and mesh upsampling. These are methods that help produce a higher resolution mesh with smoother-looking surfaces.
 		</p>
 		
 		<!-- TASK 1 -->
@@ -225,7 +225,7 @@
 		</p>
 		<div class="image-container">
 			<figure>
-				<img src='assets/6_6.png' width=350/>
+				<img src='assets/6_9.png' width=350/>
 				<figcaption>Before</figcaption>
 			</figure>
 			<figure>
@@ -246,19 +246,19 @@
 		</p>
 		<div class="image-container">
 			<figure>
-				<img src='assets/6_6.png' width=350/>
-				<figcaption>Split the diagonal edge for all 6 faces before doing loop subdivisions</figcaption>
+				<img src='assets/6_13.png' width=350/>
+				<figcaption>Split the diagonal edge for all 6 faces before subdivision</figcaption>
 			</figure>
 			<figure>
-				<img src='assets/6_10.png' width=350/>
+				<img src='assets/6_14.png' width=350/>
 				<figcaption>First iteration</figcaption>
 			</figure>
 			<figure>
-				<img src='assets/6_11.png' width=350/>
+				<img src='assets/6_15.png' width=350/>
 				<figcaption>Third iteration</figcaption>
 			</figure>
 			<figure>
-				<img src='assets/6_12.png' width=350/>
+				<img src='assets/6_16.png' width=350/>
 				<figcaption>Forth iteration</figcaption>
 			</figure>
 		</div>
