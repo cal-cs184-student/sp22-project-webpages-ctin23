@@ -1,7 +1,273 @@
 <html>
 	<head>
+		<h1>CS 184 Project 2 Write-Up</h1>
+		<link rel="stylesheet" href="styles.css">
 	</head>
 	<body>
-		Project 2 here
+		<h2>Overview</h2>
+		<p>
+			There are two sections in this project. In the first section, we implemented Bezier curves and Bezier surfaces using de Casteljau algorithm. Bezier curves and Bezier surfaces are used for producing smooth curves and surfaces by recursively cutting the corner. In the second section, we implemented functions for area-weighted vertex normals, edge flips, edge splits, and mesh upsampling. These are methods that help produce a higher resolution mesh with smoother-looking surfaces.
+		</p>
+		
+		<!-- TASK 1 -->
+		<h2>
+			Task 1: Bezier Curve
+		</h2>
+		<p>
+			De Castelijau's algorithm is an algorithm that produces a smooth curve by recursively “cutting the corner” using linear interpolation. Given a vector of points inside <code>evaluateStep</code> , we use a for-loop to loop through all the points. For every two subsequent points, p0 and p1, we perform linear interpolation between the two points, given float value t: <code>lerp(p0, p1, t) = (1 - t) * p0 + t * p1</code>. We push the original and new points to a new vector. Finally, we return that new vector in <code>evaluateStep</code>. The function <code>evaluateStep</code> is called recursively until the new vector has size = 1.
+		</p>
+		<div class="image-container">
+			<figure>
+				<img src='assets/1_1.png' width=350/>
+				<figcaption>Bezier curve with control points</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/1_2.png' width=350/>
+				<figcaption>1st iteration of lerps</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/1_3.png' width=350/>
+				<figcaption>2nd iteration of lerps</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/1_4.png' width=350/>
+				<figcaption>3rd iteration of lerps</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/1_5.png' width=350/>
+				<figcaption>4th iteration of lerps</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/1_6.png' width=350/>
+				<figcaption>last iteration of lerps</figcaption>
+			</figure>
+		</div>
+
+		<p>
+			The following image shows a slightly different Bezier curve created by moving the original control points and modifying the parameter t via mouse scrolling:
+		</p>
+		<figure>
+			<img src='assets/1_7.png' width=600/>
+			<figcaption>Another bezier curve with control points</figcaption>
+		</figure>
+
+		<!-- TASK 2 -->
+		<h2>
+			Task 2: Bezier Surfaces with Separable 1D de Casteljau
+		</h2>
+		<p>
+			Given interpolation parameters <code>u</code> and <code>v</code>, we apply de Casteljau’s algorithm with parameter <code>u</code> to evaluate each row (a 2D vector) of control points in BezierPatch, getting a linearly interpolated point per row. We add each new point into a vector and apply de Casteljau’s algorithm with paramter <code>v</code> to that vector to get the final interpolated point for the BezierPatch. 
+		</p>
+		<figure>
+			<img src='assets/2_1.png' width=600/>
+			<figcaption>teapot.bez</figcaption>
+		</figure>
+
+		<!-- TASK 3 -->
+		<h2>
+			Task 3: Area-Weighted Vertex Normals
+		</h2>
+		<p>
+			We implement area-weighted vertex normals by using half edges to iterate through all the faces surrounding the given vertex, finding its normal vector * area, and adding that value to a running vector sum. In the end, we divide that vector by the total area of all neighboring faces. 
+		</p>
+		<div class="image-container">
+			<figure>
+				<img src='assets/3_1.png' width=350/>
+				<figcaption>teapot.dae w/ default flat shading</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/3_2.png' width=350/>
+				<figcaption>teapot.dae w/ Phong shading (vertex normals)</figcaption>
+			</figure>
+		</div>
+		
+
+		<!-- TASK 4 -->
+		<h2>
+			Task 4: Edge Flip
+		</h2>
+		<p>
+			We first used the diagram below we found on piazza to help us visualize the changes to all the components (Half Edge, Vertex, Edge, Face). 
+		</p>
+		<figure>
+			<img src='assets/4_1.png' width=700/>
+			<figcaption>edge flip diagram</figcaption>
+		</figure>
+		<p>
+			Then we assign all the pointers to variables so that it’s easier to keep track later. Now we can just reassign all the pointers according to the diagram. 
+		</p>
+		<div class="image-container">
+			<figure>
+				<img src='assets/4_2.png' width=350/>
+				<figcaption>Before</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/4_3.png' width=320/>
+				<figcaption>After</figcaption>
+			</figure>
+		</div>
+		<p>
+			Regarding debugging, at first we did not assign the “outside” elements correctly and the flipping operations seemed to run forever. The best way to debug in this part was to look at the diagram and compare each pointer before vs after. It was tedious but very useful.
+		</p>
+		<!-- TASK 5 -->
+		<h2>
+			Task 5: Edge Split
+		</h2>
+		<p>
+			We first drew out the diagrams of before and after edge splitting, making sure to include all the elements (Edges, Vertices, Faces, Half Edges). Then we assigned all the elements to variables and allocate new elements as needed (6 new half edges, 3 new edges, 2 new faces, 1 new vertex). Lastly, we just reassigned all the pointers according to the diagram.
+		</p>
+		<figure>
+			<img src='assets/5_1.jpeg' width=650/>
+			<figcaption>Edge split diagram</figcaption>
+		</figure>
+		<figure>
+			<img src='assets/5_2.png' width=350/>
+			<figcaption>Before splitting</figcaption>
+		</figure>
+		<div class="image-container">
+			<figure>
+				<img src='assets/5_3.png' width=350/>
+				<figcaption>After some splits</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/5_4.png' width=350/>
+				<figcaption>After more splits</figcaption>
+			</figure>
+		</div>
+		<p>
+			The following images show a combination of both edge splits and edge flips:
+		</p>
+		<div class="image-container">
+			<figure>
+				<img src='assets/5_5.png' width=350/>
+				<figcaption>Before</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/5_6.png' width=350/>
+				<figcaption>Flip 2 edges</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/5_7.png' width=350/>
+				<figcaption>Split  3 times</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/5_8.png' width=350/>
+				<figcaption>Flip the edges after splitting</figcaption>
+			</figure>
+		</div>
+		<p>
+			Regarding debugging, same as part 4, the most effective way to debug is to draw out the diagram and chase the pointers one by one to make sure every pointer points to a correct element. It was a tedious journey but I am glad we did it!
+		</p>
+
+
+		<!-- TASK 6 -->
+		<h2>
+			Task 6: Loop Subdivision for Mesh Upsampling
+		</h2>
+		<p>
+			Loop subdivision increases the resolution of a 3D mesh by dividing the triangles that compose the mesh into 4 smaller triangles and updating the position of their vertices. Our algorithm is the following:
+			<ol>
+				<li>Compute the new position for original vertices.</li>
+				<li>Compute the position for new vertices.</li>
+				<li>Split all original edges.
+					<ul>
+						<li>We had a bug at this step. When we split an edge, 3 new edges are created, but for loop subdivision, one of them should be treated as an original edge in the subsequent step. We don’t want to further split this edge, but we can’t mark it as new. We resolved this issue by leveraging the fact that all new edges created are appended to the end of the list of edges for a mesh. Therefore, we stop iterating through edges the moment we see a new edge.</li>
+					</ul>
+				</li>
+				<li>Flip new edges that connect an old and new vertex.</li>
+				<li>Set the new position of all vertices. </li>
+			</ol>
+		</p>
+		<p>
+			Loop subdivision calculates the new position of vertices by taking a weighted average of neighboring vertices. This results in an overall smoothing of corners and edges, but the original protrusions of the mesh are still present. As seen below, the icosahedron, when subdivided 3 times, still has several distinct areas of higher elevation and is not a perfect sphere.
+		</p>
+		<div class="image-container">
+			<figure>
+				<img src='assets/6_1.png' width=350/>
+				<figcaption>Before</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/6_2.png' width=350/>
+				<figcaption>First iteration</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/6_3.png' width=350/>
+				<figcaption>Second iteration</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/6_4.png' width=350/>
+				<figcaption>Third iteration</figcaption>
+			</figure>
+		</div>
+		<p>
+			If we pre-process the icosahedron before performing upsampling by splitting some of the edges, we will have more edges and vertices to do subdivision with, so we can reduce the sharp corners more effectively.
+		</p>
+		<div class="image-container">
+			<figure>
+				<img src='assets/6_5.png' width=350/>
+				<figcaption>Pre-splitting some edges before upsampling</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/6_6.png' width=350/>
+				<figcaption>First iteration</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/6_7.png' width=350/>
+				<figcaption>Second iteration</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/6_8.png' width=350/>
+				<figcaption>Third iteration</figcaption>
+			</figure>
+		</div>
+		<p>
+			In the following series of 8 images, we explore symmetries and asymmetries of loop subdivision on a cube. As we can see the following 4 images, after four iterations of loop subdivisions, the cube looks slightly asymmetric because the edges are not symmetrical in both x and y axis in the first place. We can see that there is only one diagonal edge before loop subdivision so then when we perform repeated subdivisions, it splits the asymmetric meshes and thus the resulting meshes are also asymmetric.
+		</p>
+		<div class="image-container">
+			<figure>
+				<img src='assets/6_9.png' width=350/>
+				<figcaption>Before</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/6_10.png' width=350/>
+				<figcaption>First iteration of loop subdivision</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/6_11.png' width=350/>
+				<figcaption>Third iteration</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/6_12.png' width=350/>
+				<figcaption>Forth iteration</figcaption>
+			</figure>
+		</div>
+		<p>
+			If we split the diagonal edges for all 6 faces before doing any loop subdivision, we can see that now the faces of the cube are symmetrical in both x and y axis. So when we perform loop subdivision, all the new meshes are more symmetrical than the ones without pre-splitting. It looks more like a cube now after four iterations of upsampling.
+		</p>
+		<div class="image-container">
+			<figure>
+				<img src='assets/6_13.png' width=350/>
+				<figcaption>Split the diagonal edge for all 6 faces before subdivision</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/6_14.png' width=350/>
+				<figcaption>First iteration</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/6_15.png' width=350/>
+				<figcaption>Third iteration</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/6_16.png' width=350/>
+				<figcaption>Forth iteration</figcaption>
+			</figure>
+		</div>
+
+			
 	</body>
+	<footer>
+		<p>
+			Link to writeup: https://cal-cs184-student.github.io/sp22-project-webpages-ctin23/proj2/index.html
+		</p>
+	</footer>
 </html>
