@@ -1,7 +1,139 @@
 <html>
 	<head>
+		<h1>CS 184 Project 3-2 Write-Up</h1>
+		<link rel="stylesheet" href="styles.css">
 	</head>
 	<body>
-		Project 3-2 here
+		<h2>Overview</h2>
+		<p>
+			Our project is composed of two parts. In the first part, we implemented functions to sample light from mirror and glass materials. It includes reflection, refraction, total internal reflection calculations, and uses Schlick’s approximation. In the second part, we implemented functions to sample from microfacet materials. My partner and I had problems compiling this project on our computers, but we solved this by running the tests on hive machines. 		
+		</p>
+		
+		<!-- PART 1 -->
+
+		<h2>Part 1: Mirror and Glass Materials</h2>
+		<p>
+			In this section, we implemented reflection and refraction for modeling mirror and glass materials. First, we check if there is total internal reflection, and if so, we assign the incoming ray as the reflection of the outgoing ray. If not, we use Schlick’s approximation to give a probability to either return a reflected ray or refracted ray. If a ray is reflected, we calculate the reflected ray by an easy transformation: we reflect across the z-axis, since the normal vector lies on the z-axis. If a ray is refracted, we calculate the refracted ray based on the index of refraction. 
+		</p>
+		<p>
+			<strong>The following gallery displays CBspheres.dae rendered with max_ray_depth set to 0, 1, 2, 3, 4, 5, and 100, respectively (with 128 samples per pixel and 4 samples per light):</strong>
+		</p>
+		<div class="image-container-2">
+			<figure>
+				<img src='assets/1-1.png' width=350/>
+				<figcaption>max ray depth = 0</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/1-2.png' width=350/>
+				<figcaption>max ray depth = 1</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/1-3.png' width=350/>
+				<figcaption>max ray depth = 2</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/1-4.png' width=350/>
+				<figcaption>max ray depth = 3</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/1-5.png' width=350/>
+				<figcaption>max ray depth = 4</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/1-6.png' width=350/>
+				<figcaption>max ray depth = 5</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/1-7.png' width=350/>
+				<figcaption>max ray depth = 100</figcaption>
+			</figure>
+		</div>
+		<p>
+			With zero bounces of light, the scene is completely black except for the light source. 
+		</p>
+		<p>
+			With one bounce of light, the scene is illuminated, but the spheres are black because we can’t see the direct light on the spheres from our point of view (since two bounces are required for a ray to go from the light source to the sphere, then from the sphere to the camera).  
+		</p>
+		<p>
+			With two bounces of light, we start seeing the left sphere, which is a mirror, but the right sphere, which is glass, remains mostly black. 
+		</p>
+		<p>
+			With three bounces of light, we can see the glass sphere, but the reflection of the glass sphere on the left remains black.
+		</p>
+		<p>
+			With four bounces of light, we can see a lot more refraction and reflection. With five bounces of light, we can even see a bright circle reflected from the right sphere to the wall.
+		</p>
+		<p>
+			With 100 bounces of light, the image is a lot brighter, but comes with more noise.
+		</p>
+
+		<!-- PART 2 -->
+
+		<h2>Part 2: Microfacet Materials</h2>
+		<p>
+			In part 2, we implemented the sampling function for microfacet materials. There are 4 tasks in this part, each involving one function to implement. In task 1, we implemented the Microfacet BRDF, which takes in the incoming and outgoing ray and returns the reflectance based on the half vector and normal vector. In task 2, we implemented the Normal Distribution Function which takes alpha (the roughness) into account. In task 3, we implemented the Fresnel Term which describes the reflection and transmission of light. In task 4, we put everything together into the sample_f function. 
+		</p>
+		<p>
+			<strong>The following gallery displays CBdragon_microfacet_au.dae rendered with α set to 0.005, 0.05, 0.25 and 0.5 (with 128 samples per pixel, 1 samples per light, and 5 bounces of light):</strong>
+		</p>
+		<div class="image-container-2">
+			<figure>
+				<img src='assets/2-1.png' width=350/>
+				<figcaption>alpha = 0.005</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/2-2.png' width=350/>
+				<figcaption>alpha = 0.05</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/2-3.png' width=350/>
+				<figcaption>alpha = 0.25</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/2-4.png' width=350/>
+				<figcaption>alpha = 0.5</figcaption>
+			</figure>
+		</div>
+		<p>
+			Alpha is the value to determine the roughness of the macro surface. When alpha is small, like 0.005 or 0.05, the dragon is shinier and smoother. When alpha is greater, like 0.25 or 0.5, the dragon is rougher and diffuses more light compared to the first two. Interestingly, the room also contains more white noise when alpha is smaller.
+		</p>
+		<p>
+			<strong>The following two images compare CBbunny_microfacet_cu.dae rendered using cosine hemisphere sampling and importance sampling (with 64 samples per pixel, 1 sample per light, and 5 bounces of light).</strong>
+		</p>
+		<div class="image-container-2">
+			<figure>
+				<img src='assets/2-5.png' width=350/>
+				<figcaption>Cosine hemisphere sampling</figcaption>
+			</figure>
+			<figure>
+				<img src='assets/2-6.png' width=350/>
+				<figcaption>Importance sampling</figcaption>
+			</figure>
+		</div>
+		<p>
+			The scene rendered with cosine hemisphere sampling contains more noise because it uniformly samples rays over the hemisphere surrounding an intersection point. Since the bunny is covered with a microfacet material, the cosine hemisphere sampling results in a noisier image since it is better for diffuse BRDFs. Important sampling selectively samples the material, so it produces less noise.
+		</p>
+		<p>
+			<strong>The following image is our conductor material bunny rendered with custom eta and k values:</strong>
+		</p>
+		<figure>
+			<img src='assets/2-7.png' width=480/>
+			<figcaption>Platinum bunny</figcaption>
+		</figure>
+		<p>
+			We chose Platinum as the conductor material for the bunny. The eta values are [0.46138 0.46608 0.58870] and the k values are [5.9022 5.0942 3.9742].
+		</p>
+
+		<!-- Reflection -->
+
+		<h2>Reflection</h2>
+		<p>
+			We started the project collaboratively in-person by coding via CLion’s liveshare. After our initial work session, we split the project with Harrison primarily working on part 1 and Phoebe primarily working on part 2. We debugged separately. We approached this project in the same way as project 3-1, but since this one was much shorter, we were able to complete it in less work sessions and worked more individually. After the past few projects, we have found a workflow and communication style that works for our partnership. 
+		</p>
 	</body>
+	<footer>
+		<p>
+			Link to writeup: https://cal-cs184-student.github.io/sp22-project-webpages-ctin23/proj3-2/index.html
+		</p>
+	</footer>
 </html>
